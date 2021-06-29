@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  caddy:
+    build:
+      context: ./src/caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./src/caddy/.caddy:/root/.caddy
+      - ./src/caddy/Caddyfile:/etc/Caddyfile
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - ACME_AGREE=true
+    networks:
+      - api
+    restart: always
+
+  fastify-phlincc:
+    build:
+      context: ./src/fastify-phlincc
+    volumes:
+      - ./src/fastify-phlincc:/root/fastify
+      - /root/fastify/node_modules
+      - /etc/localtime:/etc/localtime:ro
+    command: npm start
+    networks:
+      - api
+    restart: always
+
+  mongodb:
+    image: mongo:latest
+    command: ["--bind_ip_all"]
+    volumes:
+      - ./data/db:/root/data/db
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - api
+    restart: always
+
+networks:
+  api:

@@ -1,0 +1,12 @@
+api.phlin.cc {
+    gzip
+    timeouts {
+        idle 5m
+    }
+    proxy / fastify-phlincc:3600 {
+        transparent
+    }
+    tls {
+        dns cloudflare
+    }
+}
